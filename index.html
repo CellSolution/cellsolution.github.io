@@ -180,7 +180,7 @@ function whatsappOrder(){
     const message = cart.map(p => `${p.name} - $${p.price}`).join("\n");
     const total = cart.reduce((acc, p) => acc + p.price, 0);
     const whatsappMessage = `Hola, quiero hacer un pedido:\n\n${message}\n\nTotal: $${total}\n\nPor favor, contáctenme.`;
-    const phoneNumber = "1234567890"; // Reemplaza con el número de WhatsApp
+    const phoneNumber = "5355821301"; // Reemplaza con el número de WhatsApp
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(url, "_blank");
 }
