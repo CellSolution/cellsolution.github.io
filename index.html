@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tienda Online</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f4f4;
+}
+
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.search-container {
+    text-align: center;
+    margin: 20px;
+}
+
+.search-container input {
+    width: 60%;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.product {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.product button {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cart {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.cart h2 {
+    text-align: center;
+}
+
+.cart-item {
+    margin-bottom: 10px;
+}
+
+.cart button {
+    width: 100%;
+    padding: 10px;
+    background: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Mi Tienda</h1>
+</header>
+
+<div class="search-container">
+    <input type="text" id="search" placeholder="Buscar producto..." onkeyup="searchProducts()">
+</div>
+
+<div class="products" id="product-list">
+</div>
+
+<div class="cart">
+    <h2>🛒 Carrito</h2>
+    <div id="cart-items"></div>
+    <hr>
+    <h3>Total: $<span id="total">0</span></h3>
+    <button onclick="sendOrder()">Pedir por WhatsApp</button>
+</div>
+
+<script>
+const products = [
+    { id: 1, name: "Producto A", price: 10 },
+    { id: 2, name: "Producto B", price: 20 },
+    { id: 3, name: "Producto C", price: 15 },
+    { id: 4, name: "Producto D", price: 30 }
+];
+
+let cart = [];
+
+function displayProducts(list) {
+    const container = document.getElementById("product-list");
+    container.innerHTML = "";
+    list.forEach(product => {
+        container.innerHTML += `
+            <div class="product">
+                <h3>${product.name}</h3>
+                <p>$${product.price}</p>
+                <button onclick="addToCart(${product.id})">Agregar</button>
+            </div>
+        `;
+    });
+}
+
+function addToCart(id) {
+    const product = products.find(p => p.id === id);
+    cart.push(product);
+    updateCart();
+}
+
+function updateCart() {
+    const cartContainer = document.getElementById("cart-items");
+    cartContainer.innerHTML = "";
+    let total = 0;
+
+    cart.forEach((item, index) => {
+        total += item.price;
+        cartContainer.innerHTML += `
+            <div class="cart-item">
+                ${item.name} - $${item.price}
+                <button onclick="removeFromCart(${index})">❌</button>
+            </div>
+        `;
+    });
+
+    document.getElementById("total").innerText = total;
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+function searchProducts() {
+    const searchValue = document.getElementById("search").value.toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(searchValue));
+    displayProducts(filtered);
+}
+
+function sendOrder() {
+    if (cart.length === 0) {
+        alert("El carrito está vacío");
+        return;
+    }
+
+    let message = "Hola, quiero pedir:%0A";
+    let total = 0;
+
+    cart.forEach(item => {
+        message += `- ${item.name} ($${item.price})%0A`;
+        total += item.price;
+    });
+
+    message += `%0ATotal: $${total}`;
+
+    const phoneNumber = "5491123456789"; // 👈 CAMBIA AQUÍ TU NÚMERO (formato internacional sin +)
+    const url = `https://wa.me/${phoneNumber}?text=${message}`;
+
+    window.open(url, "_blank");
+}
+
+displayProducts(products);
+</script>
+
+</body>
+</html>
