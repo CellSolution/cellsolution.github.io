@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tienda Online</title>
+<title>CellSolution Shop</title>
 
 <style>
 body {
@@ -89,7 +89,7 @@ header {
 <body>
 
 <header>
-    <h1>Mi Tienda</h1>
+    <h1>CELLSOLUTION</h1>
 </header>
 
 <div class="search-container">
@@ -112,7 +112,7 @@ const products = [
     { id: 1, name: "Producto A", price: 10 },
     { id: 2, name: "Producto B", price: 20 },
     { id: 3, name: "Producto C", price: 15 },
-    { id: 4, name: "Producto D", price: 30 }
+    { id: 4, name: "Producto D", price: 30 },
 ];
 
 let cart = [];
@@ -182,7 +182,7 @@ function sendOrder() {
 
     message += `%0ATotal: $${total}`;
 
-    const phoneNumber = "5491123456789"; // 👈 CAMBIA AQUÍ TU NÚMERO (formato internacional sin +)
+    const phoneNumber = "55821301"; // 👈 CAMBIA AQUÍ TU NÚMERO (formato internacional sin +)
     const url = `https://wa.me/${phoneNumber}?text=${message}`;
 
     window.open(url, "_blank");
