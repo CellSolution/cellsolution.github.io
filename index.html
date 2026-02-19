@@ -3,265 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tienda Online</title>
+<title>CellSolution</title>
 
 <style>
-body{
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
-    background:#f2f2f2;
-}
-
-header{
-    background:#1f2937;
-    color:white;
-    padding:15px;
-    text-align:center;
-    position:relative;
-}
-
-/* Carrito icono */
-.cart-icon{
-    position:absolute;
-    right:20px;
-    top:15px;
-    font-size:28px;
-    cursor:pointer;
-}
-
-.cart-count{
-    position:absolute;
-    top:-8px;
-    right:-10px;
-    background:red;
-    color:white;
-    font-size:14px;
-    border-radius:50%;
-    padding:3px 7px;
-}
-
-/* Productos */
-.products{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:20px;
-    padding:20px;
-}
-
-.product{
-    background:white;
-    border-radius:10px;
-    padding:15px;
-    text-align:center;
-    box-shadow:0 3px 8px rgba(0,0,0,0.1);
-}
-
-.product img{
-    width:100%;
-    height:150px;
-    object-fit:cover;
-    border-radius:8px;
-}
-
-.product button{
-    margin-top:10px;
-    padding:8px 12px;
-    background:#10b981;
-    border:none;
-    color:white;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-/* Carrito lateral */
-.cart-panel{
-    position:fixed;
-    top:0;
-    right:-350px;
-    width:300px;
-    height:100%;
-    background:white;
-    box-shadow:-3px 0 10px rgba(0,0,0,0.2);
-    transition:0.3s;
-    padding:20px;
-    overflow-y:auto;
-}
-
-.cart-panel.active{
-    right:0;
-}
-
-.cart-item{
-    margin-bottom:10px;
-    border-bottom:1px solid #ddd;
-    padding-bottom:5px;
-}
-
-.cart-panel button{
-    width:100%;
-    padding:10px;
-    background:#f59e0b;
-    border:none;
-    color:white;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-/* Botón volver */
-.back-btn{
-    margin:20px;
-    padding:8px 15px;
-    background:#374151;
-    color:white;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-/* Estilos para el botón de cerrar (X) */
-.cart-panel button.close-btn {
-    background:none;
-    border:none;
-    font-size:30px;
-    color:#333;
-    cursor:pointer;
-    font-weight:bold;
-    padding:5px;
-    margin-left:auto;
-    display:block;
-}
-.cart-panel button.close-btn:hover {
-    color:red;
-}
+body{margin:0;font-family:Arial, Helvetica, sans-serif;background:#f2f2f2;}
+header{background:#111827;color:white;padding:15px;text-align:center;position:relative;}
+.cart-icon{position:absolute;right:20px;top:15px;font-size:28px;cursor:pointer;}
+.cart-count{position:absolute;top:-8px;right:-10px;background:red;color:white;font-size:14px;border-radius:50%;padding:3px 7px;}
+.search-bar{text-align:center;padding:15px;}
+.search-bar input{width:60%;padding:10px;font-size:16px;border-radius:6px;border:1px solid #ccc;}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;padding:20px;}
+.product{background:white;border-radius:10px;padding:15px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.1);cursor:pointer;transition:0.2s;}
+.product:hover{transform:scale(1.03);}
+.product img{width:100%;height:160px;object-fit:cover;border-radius:8px;}
+.product h3{margin:10px 0 5px;}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;}
+.modal-content{background:white;padding:20px;width:350px;border-radius:10px;}
+.modal-content img{width:100%;border-radius:8px;}
+.modal-thumbnails{display: flex; gap: 10px; margin-top: 10px; justify-content: center;}
+.modal-thumbnails img{width:50px; height:50px; object-fit:cover; border-radius:8px; cursor:pointer;}
+.btn{padding:8px 12px;border:none;border-radius:6px;cursor:pointer;margin-top:8px;}
+.btn-primary{background:#10b981;color:white;}
+.btn-close{background:#ef4444;color:white;}
+.cart-panel{position:fixed;top:0;right:-350px;width:300px;height:100%;background:white;transition:0.3s;padding:20px;overflow:auto;box-shadow:-3px 0 10px rgba(0,0,0,0.2);}
+.cart-panel.active{right:0;}
+.cart-item{border-bottom:1px solid #ddd;padding:8px 0;}
+.back-btn{margin-bottom:10px;padding:6px 10px;background:#374151;color:white;border:none;border-radius:6px;cursor:pointer;}
 </style>
 </head>
-
 <body>
 
 <header>
-    Mi Tienda
-    <div class="cart-icon" onclick="toggleCart()">
-        🛒
-        <span id="cart-count" class="cart-count">0</span>
-    </div>
+    CellSolution
+    <div class="cart-icon" onclick="toggleCart()">🛒<span id="cart-count" class="cart-count">0</span></div>
 </header>
 
-<div id="content" class="products"></div>
+<div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Buscar producto..." onkeyup="searchProducts()">
+</div>
 
-<!-- Carrito -->
-<div id="cart-panel" class="cart-panel">
-    
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2>Tu Pedido</h2>
-        <button class="close-btn" onclick="toggleCart()">✖</button>
+<div id="product-list" class="products"></div>
+
+<!-- MODAL PRODUCTO -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle"></h3>
+        <img id="modalImg">
+        <p id="modalDesc"></p>
+        <p><strong>$<span id="modalPrice"></span></strong></p>
+        <div id="modalThumbnails" class="modal-thumbnails"></div>
+        <button class="btn btn-primary" onclick="addToCartFromModal()">Agregar al carrito</button>
+        <button class="btn btn-close" onclick="closeModal()">Cerrar</button>
     </div>
+</div>
 
+<!-- CARRITO -->
+<div id="cart-panel" class="cart-panel">
+    <h2>Tu Pedido</h2>
     <div id="cart-items"></div>
     <h3>Total: $<span id="total">0</span></h3>
-    <button onclick="sendOrder()">Pedir por WhatsApp</button>
+    <button class="btn btn-primary" onclick="whatsappOrder()">Pedir por WhatsApp</button>
+    <button class="btn btn-close" onclick="toggleCart()">Cerrar Carrito</button>
 </div>
 
 <script>
-
-const phoneNumber = "5491123456789"; // CAMBIAR
-
-let cart = [];
-
-const products = [
-    {id:1, name:"Producto A", price:15, img:"https://picsum.photos/300?1"},
-    {id:2, name:"Producto B", price:20, img:"https://picsum.photos/300?2"},
-    {id:3, name:"Forros", type:"forros", img:"https://picsum.photos/300?3"}
+// Productos iniciales
+let products = [
+    {id:1,name:"Producto A",price:20,desc:"Descripción del Producto A",img:"https://picsum.photos/300?1", images: ["https://picsum.photos/300?1", "https://picsum.photos/300?2", "https://picsum.photos/300?3"]},
+    {id:2,name:"Producto B",price:35,desc:"Descripción del Producto B",img:"https://picsum.photos/300?2", images: ["https://picsum.photos/300?2", "https://picsum.photos/300?4", "https://picsum.photos/300?5"]},
+    {id:3,name:"Forros",type:"forros",desc:"Selecciona un modelo",img:"https://picsum.photos/300?3", images: ["https://picsum.photos/300?3", "https://picsum.photos/300?4"]},
 ];
 
-const modelosForros = [
-    {id:101, name:"Modelo 1", img:"https://picsum.photos/300?4"},
-    {id:102, name:"Modelo 2", img:"https://picsum.photos/300?5"}
+let modelosForros = [
+    {id:101,name:"Modelo 1",img:"https://picsum.photos/300?4"},
+    {id:102,name:"Modelo 2",img:"https://picsum.photos/300?5"}
 ];
 
-const forrosDisponibles = {
+let forrosDisponibles = {
     101:[
-        {id:201, name:"Forro Rojo", price:25, img:"https://picsum.photos/300?6"},
-        {id:202, name:"Forro Azul", price:30, img:"https://picsum.photos/300?7"}
+        {id:201,name:"Forro Rojo",price:25,img:"https://picsum.photos/300?6", desc:"Forro rojo de alta calidad", images: ["https://picsum.photos/300?6", "https://picsum.photos/300?7"]},
+        {id:202,name:"Forro Azul",price:30,img:"https://picsum.photos/300?7", desc:"Forro azul con diseño único", images: ["https://picsum.photos/300?7", "https://picsum.photos/300?8"]}
     ],
     102:[
-        {id:203, name:"Forro Negro", price:28, img:"https://picsum.photos/300?8"}
+        {id:203,name:"Forro Negro",price:28,img:"https://picsum.photos/300?8", desc:"Forro negro clásico", images: ["https://picsum.photos/300?8", "https://picsum.photos/300?9"]}
     ]
 };
 
-function renderProducts(list){
-    const content = document.getElementById("content");
-    content.innerHTML="";
+let cart=[];
+let selectedProduct=null;
+
+// RENDER PRINCIPAL
+function renderProducts(list=products){
+    const container=document.getElementById("product-list");
+    container.innerHTML="";
     list.forEach(p=>{
-        content.innerHTML+=`
-        <div class="product">
+        container.innerHTML+=`<div class="product" onclick="handleClick(${p.id})">
             <img src="${p.img}">
             <h3>${p.name}</h3>
-            ${p.price? `<p>$${p.price}</p>`:""}
-            <button onclick="handleClick(${p.id})">
-                ${p.type==="forros"?"Ver Modelos":"Agregar"}
-            </button>
-        </div>
-        `;
+            ${p.price?`<p>$${p.price}</p>`:""}
+        </div>`;
     });
 }
 
+// BUSCADOR
+function searchProducts(){
+    const value=document.getElementById("searchInput").value.toLowerCase();
+    const filtered=products.filter(p=>p.name.toLowerCase().includes(value));
+    renderProducts(filtered);
+}
+
+// CLICK PRODUCTO
 function handleClick(id){
-    const product = products.find(p=>p.id===id);
-    if(product && product.type==="forros"){
+    const product=products.find(p=>p.id===id);
+    if(product.type==="forros"){
         renderModelos();
     } else {
-        addToCart(product);
+        openModal(id);
     }
 }
 
-function renderModelos(){
-    const content = document.getElementById("content");
-    content.innerHTML=`<button class="back-btn" onclick="renderProducts(products)">⬅ Volver</button>`;
-    modelosForros.forEach(m=>{
-        content.innerHTML+=`
-        <div class="product">
-            <img src="${m.img}">
-            <h3>${m.name}</h3>
-            <button onclick="renderForros(${m.id})">Ver Forros</button>
-        </div>
-        `;
+// MODAL
+function openModal(id){
+    selectedProduct=products.find(p=>p.id===id);
+    document.getElementById("modalTitle").innerText=selectedProduct.name;
+    document.getElementById("modalImg").src=selectedProduct.img;
+    document.getElementById("modalDesc").innerText=selectedProduct.desc;
+    document.getElementById("modalPrice").innerText=selectedProduct.price;
+
+    // Renderizar miniaturas
+    const thumbnailsContainer = document.getElementById("modalThumbnails");
+    thumbnailsContainer.innerHTML = "";
+    selectedProduct.images.forEach(image => {
+        thumbnailsContainer.innerHTML += `<img src="${image}" onclick="changeImage('${image}')">`;
     });
+
+    document.getElementById("productModal").style.display="flex";
 }
 
-function renderForros(modeloId){
-    const content = document.getElementById("content");
-    content.innerHTML=`<button class="back-btn" onclick="renderModelos()">⬅ Volver</button>`;
-    forrosDisponibles[modeloId].forEach(f=>{
-        content.innerHTML+=`
-        <div class="product">
-            <img src="${f.img}">
-            <h3>${f.name}</h3>
-            <p>$${f.price}</p>
-            <button onclick='addToCart(${JSON.stringify(f)})'>Agregar</button>
-        </div>
-        `;
-    });
+function closeModal(){
+    document.getElementById("productModal").style.display="none";
 }
 
-function addToCart(product){
-    if(typeof product === "string"){
-        product = JSON.parse(product);
-    }
-    cart.push(product);
+function changeImage(imageSrc) {
+    document.getElementById("modalImg").src = imageSrc;
+}
+
+function addToCartFromModal(){
+    cart.push(selectedProduct);
     updateCart();
+    closeModal();
+}
+
+// CARRITO
+function toggleCart(){
+    document.getElementById("cart-panel").classList.toggle("active");
 }
 
 function updateCart(){
-    const container = document.getElementById("cart-items");
-    container.innerHTML="";
     let total=0;
-    cart.forEach((item,index)=>{
-        total+=item.price;
-        container.innerHTML+=`
-        <div class="cart-item">
-            ${item.name} - $${item.price}
-            <button onclick="removeItem(${index})">❌</button>
-        </div>`;
+    const container=document.getElementById("cart-items");
+    container.innerHTML="";
+    cart.forEach((p,index)=>{
+        total+=p.price;
+        container.innerHTML+=`<div class="cart-item">${p.name} - $${p.price} <button onclick="removeItem(${index})">❌</button></div>`;
     });
     document.getElementById("total").innerText=total;
     document.getElementById("cart-count").innerText=cart.length;
@@ -272,26 +176,60 @@ function removeItem(index){
     updateCart();
 }
 
-function toggleCart(){
-    const panel = document.getElementById("cart-panel");
-    panel.classList.toggle("active");
+function whatsappOrder(){
+    const message = cart.map(p => `${p.name} - $${p.price}`).join("\n");
+    const total = cart.reduce((acc, p) => acc + p.price, 0);
+    const whatsappMessage = `Hola, quiero hacer un pedido:\n\n${message}\n\nTotal: $${total}\n\nPor favor, contáctenme.`;
+    const phoneNumber = "1234567890"; // Reemplaza con el número de WhatsApp
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+    window.open(url, "_blank");
 }
 
-function sendOrder(){
-    if(cart.length===0){ alert("Carrito vacío"); return; }
-    let message="Hola quiero pedir:%0A";
-    let total=0;
-    cart.forEach(item=>{
-        message+=`- ${item.name} ($${item.price})%0A`;
-        total+=item.price;
+// SISTEMA FORROS
+function renderModelos(){
+    const container=document.getElementById("product-list");
+    container.innerHTML=`<button class="back-btn" onclick="renderProducts()">⬅ Volver</button>`;
+    modelosForros.forEach(m=>{
+        container.innerHTML+=`<div class="product" onclick="renderForros(${m.id})">
+            <img src="${m.img}">
+            <h3>${m.name}</h3>
+        </div>`;
     });
-    message+=`%0ATotal: $${total}`;
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`,"_blank");
 }
 
-renderProducts(products);
+function renderForros(modeloId){
+    const container=document.getElementById("product-list");
+    container.innerHTML=`<button class="back-btn" onclick="renderModelos()">⬅ Volver</button>`;
+    
+    forrosDisponibles[modeloId].forEach(f=>{
+        container.innerHTML+=`<div class="product" onclick="openForroModal(${f.id})">
+            <img src="${f.img}">
+            <h3>${f.name}</h3>
+            <p>$${f.price}</p>
+        </div>`;
+    });
+}
 
+// ABRIR MODAL DE FORRO
+function openForroModal(forroId){
+    const forro = Object.values(forrosDisponibles).flat().find(f => f.id === forroId);
+    selectedProduct = forro; // Usamos selectedProduct para reutilizar el modal
+    document.getElementById("modalTitle").innerText = forro.name;
+    document.getElementById("modalImg").src = forro.img;
+    document.getElementById("modalDesc").innerText = forro.desc;
+    document.getElementById("modalPrice").innerText = forro.price;
+
+    // Renderizar miniaturas de forros
+    const thumbnailsContainer = document.getElementById("modalThumbnails");
+    thumbnailsContainer.innerHTML = "";
+    forro.images.forEach(image => {
+        thumbnailsContainer.innerHTML += `<img src="${image}" onclick="changeImage('${image}')">`;
+    });
+
+    document.getElementById("productModal").style.display = "flex";
+}
+
+renderProducts();
 </script>
-
 </body>
 </html>
