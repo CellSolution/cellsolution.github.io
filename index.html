@@ -29,6 +29,8 @@ header{background:#111827;color:white;padding:15px;text-align:center;position:re
 .cart-panel.active{right:0;}
 .cart-item{border-bottom:1px solid #ddd;padding:8px 0;}
 .back-btn{margin-bottom:10px;padding:6px 10px;background:#374151;color:white;border:none;border-radius:6px;cursor:pointer;}
+.order-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;}
+.order-modal-content{background:white;padding:20px;width:350px;border-radius:10px;}
 </style>
 </head>
 <body>
@@ -62,8 +64,30 @@ header{background:#111827;color:white;padding:15px;text-align:center;position:re
     <h2>Tu Pedido</h2>
     <div id="cart-items"></div>
     <h3>Total: $<span id="total">0</span></h3>
-    <button class="btn btn-primary" onclick="whatsappOrder()">Pedir por WhatsApp</button>
+    <button class="btn btn-primary" onclick="openOrderModal()">Pedir por WhatsApp</button>
     <button class="btn btn-close" onclick="toggleCart()">Cerrar Carrito</button>
+</div>
+
+<!-- MODAL DE PEDIDO -->
+<div id="orderModal" class="order-modal">
+    <div class="order-modal-content">
+        <h3>Detalles del Pedido</h3>
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" placeholder="Tu nombre" required><br><br>
+        
+        <label for="address">Dirección:</label>
+        <input type="text" id="address" placeholder="Tu dirección" required><br><br>
+        
+        <label for="payment">Método de pago:</label>
+        <select id="payment">
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia">Transferencia</option>
+        </select><br><br>
+        <label>El coste de la mensajeria se le dará una vez que haya contactado con nosotros</label><br><br>
+        
+        <button class="btn btn-primary" onclick="submitOrder()">Enviar Pedido</button>
+        <button class="btn btn-close" onclick="closeOrderModal()">Cancelar</button>
+    </div>
 </div>
 
 <script>
@@ -91,6 +115,11 @@ let forrosDisponibles = {
 
 let cart=[];
 let selectedProduct=null;
+
+// Función para generar un código de 6 dígitos aleatorios
+function generateOrderCode() {
+    return Math.floor(100000 + Math.random() * 900000); // Genera un número aleatorio de 6 dígitos
+}
 
 // RENDER PRINCIPAL
 function renderProducts(list=products){
@@ -176,13 +205,32 @@ function removeItem(index){
     updateCart();
 }
 
-function whatsappOrder(){
+// Función para abrir el modal de pedido
+function openOrderModal() {
+    document.getElementById("orderModal").style.display = "flex";
+}
+
+// Función para cerrar el modal de pedido
+function closeOrderModal() {
+    document.getElementById("orderModal").style.display = "none";
+}
+
+// Enviar pedido por WhatsApp
+function submitOrder() {
+    const name = document.getElementById("name").value;
+    const address = document.getElementById("address").value;
+    const paymentMethod = document.getElementById("payment").value;
+    const orderCode = generateOrderCode();
+    
     const message = cart.map(p => `${p.name} - $${p.price}`).join("\n");
     const total = cart.reduce((acc, p) => acc + p.price, 0);
-    const whatsappMessage = `Hola, quiero hacer un pedido:\n\n${message}\n\nTotal: $${total}\n\nPor favor, contáctenme.`;
+    const whatsappMessage = `Pedido #${orderCode}\n\nNombre: ${name}\nDirección: ${address}\nMétodo de pago: ${paymentMethod}\n\nProductos:\n${message}\n\nTotal: $${total}`;
+    
     const phoneNumber = "5355821301"; // Reemplaza con el número de WhatsApp
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(url, "_blank");
+    
+    closeOrderModal(); // Cierra el modal de pedido
 }
 
 // SISTEMA FORROS
